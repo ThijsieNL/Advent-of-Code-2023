@@ -5,13 +5,12 @@ import Data.Char (digitToInt)
 main :: IO ()
 main = do
     fileContent <- readFile "input.txt"
-    --this is all lines in the file as one array entry.
     let color = emptyColor
     let inputArray = lines fileContent
-    let splittedOnSemicolon =  map (splitOn "; ") inputArray -- :t [[String]] == [[[Char]]] --> dit zijn alle lines, ofwel alle games.
+    let splittedOnSemicolon = map (splitOn "; ") inputArray 
     let allColors = map (sumColors . makeAllColors emptyColor) splittedOnSemicolon
     let validColors = checkValidColor allColors
-    print $ sumIndexesOfTrue validColors 
+    print $ sumIDs validColors 1
 
 -- add up the ID's of valid games
 -- 12 red cubes, 13 green cubes, and 14 blue cubes
@@ -27,8 +26,6 @@ addColors (Color r1 g1 b1) (Color r2 g2 b2) = Color (r1+r2) (g1+g2) (b1+b2)
 sumColors :: [Color] -> Color
 sumColors = foldr addColors (Color 0 0 0)
 
--- getOneEntry :: Color -> [Color]
--- getOneEntry color
 
 checkValidColor :: [Color] -> [Bool]
 checkValidColor = map (\x -> red x < 13 && green x < 14 && blue x < 15)
@@ -39,7 +36,7 @@ checkValidColor (x:xs) = (red x < 13 && green x < 14 && blue x < 15) : checkVali
 
 sumIDs :: [Bool] -> Int -> Int
 sumIDs [] _ = 0
-sumIDs (x:xs) id = if x then id + sumIDs xs id+1 else sumIDs xs id+1
+sumIDs (x:xs) id = if x then id + sumIDs xs (id+1) else sumIDs xs (id+1)
 
 sumIndexesOfTrue :: [Bool] -> Int
 sumIndexesOfTrue boolList = sum [index | (value, index) <- zip boolList [1..], value]
